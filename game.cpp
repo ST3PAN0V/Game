@@ -2,6 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <string>
 
 short sDirection = STAY;
 int matr[ROWS][COLUMNS];
@@ -9,9 +10,9 @@ int posX=14, posY=1;
 bool isOutside = true;
 bool lavaShimmer = true;
 int forShimmer = 0;
-
 int curHealth = HEALTH;
 float curTime=TIME1;
+int level = 1;
 
 void createBullet(int x, int y, int discription);
 void Gunner(int x, int y, int speed, int discription);
@@ -21,11 +22,15 @@ void drawHero();
 void brick1(int x, int y);
 void brick2(int x, int y);
 void brick3(int x, int y);
-void space(int x, int y);
+void space3(int x, int y);
+void space2(int x, int y);
+void space1(int x, int y);
+void setspace(int x, int y);
 void moveEntity();
 void lava(int x, int y);
 void HP(int Hp);
 void timer(float &);
+void gameOver();
 
 class bullet
 {
@@ -119,10 +124,11 @@ public:
 std::vector<bullet> all_bullet;
 std::vector<bullet> gunners_bullets; 
 
-void space(int x, int y) // свободное пространство
+void setspace(int x, int y) // свободное пространство
 {
-    glColor3f(0.8, 0.9, 0.9);
-    glRectd(x,y,x+1,y+1);
+    if ((x+y)%3==2) space3(x,y);
+    else if ((x+y)%3==1) space2(x,y);
+    else space1(x,y);
     matr[ROWS-1-y][x] = 0;
 }
 
@@ -232,8 +238,55 @@ void brick3(int x, int y) //текстурка камня 1
         glVertex2f(x,y+0.2);
     glEnd();
 
-    //отрисовка детали №3
+    //отрисовка детали №4
     glColor3f(0.4, 0.4, 0.4);
+    glBegin(GL_POLYGON);
+        glVertex2f(x+0.8,y+0.8);
+        glVertex2f(x+0.8,y+1);
+        glVertex2f(x+1,y+1);
+        glVertex2f(x+1,y+0.8);
+    glEnd();
+}
+
+void space3(int x, int y) //текстурка пространства 1
+{
+    //закраска всей площади
+    glColor3f(0.75, 0.75, 0.75);
+    glRectd(x,y,x+1,y+1);
+
+    //отрисовка детали №1
+    glColor3f(0.9, 0.9, 0.9);
+    glBegin(GL_POLYGON);
+        glVertex2f(x,y+1);
+        glVertex2f(x,y+0.6);
+        glVertex2f(x+0.2,y+0.6);
+        glVertex2f(x+0.2,y+0.8);
+        glVertex2f(x+0.6,y+0.8);
+        glVertex2f(x+0.6,y+1);
+    glEnd();
+
+    //отрисовка детали №2
+    glColor3f(0.8, 0.8, 0.8);
+    glBegin(GL_POLYGON);
+        glVertex2f(x+0.6,y+0.4);
+        glVertex2f(x+0.4,y+0.4);
+        glVertex2f(x+0.4,y+0.6);
+        glVertex2f(x+0.8,y+0.6);
+        glVertex2f(x+0.8,y+0.2);
+        glVertex2f(x+0.6,y+0.2);
+    glEnd();
+
+    //отрисовка детали №3
+    glColor3f(0.85, 0.85, 0.85);
+    glBegin(GL_POLYGON);
+        glVertex2f(x,y);
+        glVertex2f(x+0.4,y);
+        glVertex2f(x+0.4,y+0.2);
+        glVertex2f(x,y+0.2);
+    glEnd();
+
+    //отрисовка детали №4
+    glColor3f(0.7, 0.7, 0.7);
     glBegin(GL_POLYGON);
         glVertex2f(x+0.8,y+0.8);
         glVertex2f(x+0.8,y+1);
@@ -289,6 +342,53 @@ void brick2(int x, int y) //текстурка камня 2
     glEnd();
 }
 
+void space2(int x, int y) //текстурка пространства 2
+{
+    //закраска всей площади
+    glColor3f(0.8, 0.8, 0.8);
+    glRectd(x,y,x+1,y+1);
+
+    //отрисовка детали №1
+    glColor3f(0.85, 0.85, 0.85);
+    glBegin(GL_POLYGON);
+        glVertex2f(x+0.4,y+0.8);
+        glVertex2f(x+0.4,y+1);
+        glVertex2f(x+1,y+1);
+        glVertex2f(x+1,y+0.8);
+    glEnd();
+
+    //отрисовка детали №2
+    glColor3f(0.7, 0.7, 0.7);
+    glBegin(GL_POLYGON);
+        glVertex2f(x,y);
+        glVertex2f(x+0.4,y);
+        glVertex2f(x+0.4,y+0.2);
+        glVertex2f(x,y+0.2);
+    glEnd();
+
+    //отрисовка детали №3
+    glColor3f(0.75, 0.75, 0.75);
+    glBegin(GL_POLYGON);
+        glVertex2f(x+0.2,y+0.6);
+        glVertex2f(x+0.2,y+0.8);
+        glVertex2f(x,y+0.8);
+        glVertex2f(x,y+0.4);
+        glVertex2f(x+0.4,y+0.4);
+        glVertex2f(x+0.4,y+0.6);
+    glEnd();
+
+    //отрисовка детали №4
+    glColor3f(0.8, 0.8, 0.8);
+    glBegin(GL_POLYGON);
+        glVertex2f(x+0.8,y+0.4);
+        glVertex2f(x+1,y+0.4);
+        glVertex2f(x+1,y+0.6);
+        glVertex2f(x+0.6,y+0.6);
+        glVertex2f(x+0.6,y);
+        glVertex2f(x+0.8,y);
+    glEnd();
+}
+
 void brick1(int x, int y) // текстурка камня 3
 {
     //закраска всей площади
@@ -319,6 +419,44 @@ void brick1(int x, int y) // текстурка камня 3
 
     //отрисовка детали №3
     glColor3f(0.3, 0.3, 0.3);
+    glBegin(GL_POLYGON);
+        glVertex2f(x+0.8,y+0.6);
+        glVertex2f(x+0.8,y+1);
+        glVertex2f(x+1,y+1);
+        glVertex2f(x+1,y+0.6);
+    glEnd();
+}
+
+void space1(int x, int y) // текстурка пространства 3
+{
+    //закраска всей площади
+    glColor3f(0.85, 0.85, 0.85);
+    glRectd(x,y,x+1,y+1);
+
+    //отрисовка детали №1
+    glColor3f(0.75, 0.75, 0.75);
+    glBegin(GL_POLYGON);
+        glVertex2f(x+0.6,y+0.2);
+        glVertex2f(x+0.6,y+0.4);
+        glVertex2f(x+1,y+0.4);
+        glVertex2f(x+1,y);
+        glVertex2f(x+0.2,y);
+        glVertex2f(x+0.2,y+0.2);
+    glEnd();
+
+    //отрисовка детали №2
+    glColor3f(0.8, 0.8, 0.8);
+    glBegin(GL_POLYGON);
+        glVertex2f(x+0.2,y+0.6);
+        glVertex2f(x+0.6,y+0.6);
+        glVertex2f(x+0.6,y+0.8);
+        glVertex2f(x,y+0.8);
+        glVertex2f(x,y+0.4);
+        glVertex2f(x+0.2,y+0.4);
+    glEnd();
+
+    //отрисовка детали №3
+    glColor3f(0.7, 0.7, 0.7);
     glBegin(GL_POLYGON);
         glVertex2f(x+0.8,y+0.6);
         glVertex2f(x+0.8,y+1);
@@ -366,8 +504,36 @@ void drawHero() //отрисовка персонажа
         curHealth--;
     }
     HP(curHealth);
+    //тело
+    glColor3f(0.96f, 0.86f, 0.69f);
+    glBegin(GL_POLYGON);
+        glVertex2f(posX, posY+0.3);
+        glVertex2f(posX, posY+0.7);
+        glVertex2f(posX+0.3, posY+1);
+        glVertex2f(posX+0.75, posY+1);
+        glVertex2f(posX+1, posY+0.7);
+        glVertex2f(posX+1, posY+0.3);
+        glVertex2f(posX+0.75, posY);
+        glVertex2f(posX+0.3, posY);
+    glEnd();
+    //глаза
+    glColor3f(1, 1, 1);
+    glRectd(posX+0.2,posY+0.3,posX+0.4,posY+0.7);
+    glRectd(posX+0.6,posY+0.3,posX+0.8,posY+0.7);
+    //глазницы
+    //glColor3f(0.0, 0.5, 1.0);
     glColor3f(0.0, 0.0, 0.0);
-    glRectd(posX,posY,posX+1,posY+1);
+    glRectd(posX+0.3,posY+0.4,posX+0.4,posY+0.6);
+    glRectd(posX+0.6,posY+0.4,posX+0.7,posY+0.6);
+
+    if (posY == ROWS-1) // следующий уровень
+    {
+        level++;
+        posX=14;
+        posY=1;
+        all_bullet.clear();
+        gunners_bullets.clear();
+    }
 }
 
 void setBrick(int x, int y) //рандомизация расстановки камней
@@ -381,17 +547,33 @@ void setBrick(int x, int y) //рандомизация расстановки к
 void drawMap() // отрисовка карты
 {
     std::fstream file;
-    file.open("FirstMap.txt", std::fstream::in);
+    std::string fileName;
+    switch (level)
+    {
+    case 1:
+        fileName = "FirstMap.txt";
+        break;
+    case 2:
+        fileName = "SecondMap.txt";
+        break;
+    case 3:
+        fileName = "ThirdMap.txt";
+        break;
+    }
+    file.open(fileName, std::fstream::in);
     int num;
     for(int i=0;i<ROWS;i++)
     {
         for (int j=0;j<COLUMNS;j++)
         {
             file>>num;
-            if (num == 0) space(j,COLUMNS+9-i);
+            if (num == 0 || num == 9) setspace(j,COLUMNS+9-i);
             else if (num == 1) setBrick(j,COLUMNS+9-i);
             else if (num == 2) lava(j,COLUMNS+9-i);
-            else if (num<=399 && num>=301) Gunner(j,COLUMNS+9-i, num-300, DOWN);
+            else if (num<=399 && num>=301) Gunner(j,COLUMNS+9-i, num-300, UP);
+            else if (num<=499 && num>=401) Gunner(j,COLUMNS+9-i, num-400, DOWN);
+            else if (num<=599 && num>=501) Gunner(j,COLUMNS+9-i, num-500, LEFT);
+            else if (num<=699 && num>=601) Gunner(j,COLUMNS+9-i, num-600, RIGHT);
         }
     }
     file.close();
@@ -399,14 +581,33 @@ void drawMap() // отрисовка карты
 
 void Gunner(int x, int y, int speed, int direction) // создание создателя пуль)))))))))))))))))))))))
 {
-    space(x,y);
+    setspace(x,y);
     matr[ROWS-1-y][x] = 1;
     switch (direction)
     {
     case UP:
-        glColor3f(0.4, 0.1, 0.2);
-        glRectd(x+0.2,y+0.6,x+0.8,y+1);
-        glRectd(x,y,x+1,y+0.6);
+        glColor3f(0.5, 0.3, 0.1);//корпус
+        glBegin(GL_POLYGON);
+            glVertex2f(x+0.2, y);
+            glVertex2f(x, y+0.4);
+            glVertex2f(x+0.2, y+0.8);
+            glVertex2f(x+0.8, y+0.8);
+            glVertex2f(x+1, y+0.4);
+            glVertex2f(x+0.8, y);
+        glEnd();
+        glColor3f(0.2, 0.15, 0.1);//стрелка на корпусe
+        glBegin(GL_POLYGON);
+            glVertex2f(x+0.4, y+0.4);
+            glVertex2f(x+0.2, y+0.4);
+            glVertex2f(x+0.5, y+0.6);
+            glVertex2f(x+0.8, y+0.4);
+            glVertex2f(x+0.6, y+0.4);
+            glVertex2f(x+0.6, y+0.2);
+            glVertex2f(x+0.4, y+0.2);
+        glEnd();
+        glColor3f(0.08, 0.02, 0.04);//дуло
+        glRectd(x+0.2,y+0.8,x+0.8,y+1);
+
         isOutside = true;
         for (int i=0; i<gunners_bullets.size(); i++)
         {
@@ -415,9 +616,28 @@ void Gunner(int x, int y, int speed, int direction) // создание созд
         if (isOutside) gunners_bullets.emplace_back(x, y+1, UP, speed);
         break;
     case DOWN:
-        glColor3f(0.4, 0.1, 0.2);
-        glRectd(x+0.2,y+0.4,x+0.8,y);
-        glRectd(x,y+1,x+1,y+0.4);
+        glColor3f(0.5, 0.3, 0.1);//корпус
+        glBegin(GL_POLYGON);
+            glVertex2f(x+0.2, y+0.2);
+            glVertex2f(x, y+0.6);
+            glVertex2f(x+0.2, y+1);
+            glVertex2f(x+0.8, y+1);
+            glVertex2f(x+1, y+0.6);
+            glVertex2f(x+0.8, y+0.2);
+        glEnd();
+        glColor3f(0.2, 0.15, 0.1);//стрелка на корпусe
+        glBegin(GL_POLYGON);
+            glVertex2f(x+0.4, y+0.6);
+            glVertex2f(x+0.2, y+0.6);
+            glVertex2f(x+0.5, y+0.4);
+            glVertex2f(x+0.8, y+0.6);
+            glVertex2f(x+0.6, y+0.6);
+            glVertex2f(x+0.6, y+0.8);
+            glVertex2f(x+0.4, y+0.8);
+        glEnd();
+        glColor3f(0.08, 0.02, 0.04);//дуло
+        glRectd(x+0.2,y,x+0.8,y+0.2);
+        
         isOutside = true;
         for (int i=0; i<gunners_bullets.size(); i++)
         {
@@ -426,9 +646,28 @@ void Gunner(int x, int y, int speed, int direction) // создание созд
         if (isOutside) gunners_bullets.emplace_back(x, y-1, DOWN, speed);
         break;
     case RIGHT:
-        glColor3f(0.4, 0.1, 0.2);
-        glRectd(x+0.6,y+0.8,x+1,y+0.2);
-        glRectd(x,y+1,x+0.6,y);
+        glColor3f(0.5, 0.3, 0.1);//корпус
+        glBegin(GL_POLYGON);
+            glVertex2f(x, y+0.2);
+            glVertex2f(x, y+0.8);
+            glVertex2f(x+0.4, y+1);
+            glVertex2f(x+0.8, y+0.8);
+            glVertex2f(x+0.8, y+0.2);
+            glVertex2f(x+0.4, y);
+        glEnd();
+        glColor3f(0.2, 0.15, 0.1);//стрелка на корпусe
+        glBegin(GL_POLYGON);
+            glVertex2f(x+0.4, y+0.4);
+            glVertex2f(x+0.4, y+0.2);
+            glVertex2f(x+0.6, y+0.5);
+            glVertex2f(x+0.4, y+0.8);
+            glVertex2f(x+0.4, y+0.6);
+            glVertex2f(x+0.2, y+0.6);
+            glVertex2f(x+0.2, y+0.4);
+        glEnd();
+        glColor3f(0.08, 0.02, 0.04);//дуло
+        glRectd(x+0.8,y+0.2,x+1,y+0.8);
+
         isOutside = true;
         for (int i=0; i<gunners_bullets.size(); i++)
         {
@@ -437,9 +676,28 @@ void Gunner(int x, int y, int speed, int direction) // создание созд
         if (isOutside) gunners_bullets.emplace_back(x+1, y, RIGHT, speed);
         break;
     case LEFT:
-        glColor3f(0.4, 0.1, 0.2);
-        glRectd(x+0.4,y+0.8,x,y+0.2);
-        glRectd(x+1,y+1,x+0.4,y);
+        glColor3f(0.5, 0.3, 0.1);//корпус
+        glBegin(GL_POLYGON);
+            glVertex2f(x+1, y+0.2);
+            glVertex2f(x+1, y+0.8);
+            glVertex2f(x+0.6, y+1);
+            glVertex2f(x+0.2, y+0.8);
+            glVertex2f(x+0.2, y+0.2);
+            glVertex2f(x+0.6, y);
+        glEnd();
+        glColor3f(0.2, 0.15, 0.1);//стрелка на корпусe
+        glBegin(GL_POLYGON);
+            glVertex2f(x+0.6, y+0.4);
+            glVertex2f(x+0.6, y+0.2);
+            glVertex2f(x+0.4, y+0.5);
+            glVertex2f(x+0.6, y+0.8);
+            glVertex2f(x+0.6, y+0.6);
+            glVertex2f(x+0.8, y+0.6);
+            glVertex2f(x+0.8, y+0.4);
+        glEnd();
+        glColor3f(0.08, 0.02, 0.04);//дуло
+        glRectd(x+0.2,y+0.2,x,y+0.8);
+
         isOutside = true;
         for (int i=0; i<gunners_bullets.size(); i++)
         {
@@ -480,7 +738,7 @@ void HP(int Hp)
 {
     if (curHealth==0)
     {
-        exit(100);
+        gameOver();
     }
     else
     {
@@ -494,12 +752,16 @@ void timer(float &timeValue)
     timeValue--;
     if (timeValue == 0)
     {
-        exit(1);
+        gameOver();
     }
     glColor3f(1.0, 0.7, 0.3);
     glRectd(23,1,29-(6-6*timeValue/(TIME1*1.0)),2);
 }
 
+void gameOver()
+{
+    exit(1);
+}
 //--------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------
