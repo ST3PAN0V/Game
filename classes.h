@@ -5,9 +5,9 @@
 #define LEFT -2
 #define RIGHT 2
 #define STAY 3
-#define COLUMNS 30
+#define COLUMNS 29
 #define ROWS 40
-#define HEALTH 30
+#define HEALTH 3
 #define TIME1 120*10
 
 void playGame();

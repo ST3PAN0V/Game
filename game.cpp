@@ -3,6 +3,7 @@
 #include <fstream>
 #include <algorithm>
 #include <string>
+#include <map>
 
 short sDirection = STAY;
 int matr[ROWS][COLUMNS];
@@ -13,12 +14,15 @@ int forShimmer = 0;
 int curHealth = HEALTH;
 float curTime=TIME1;
 int level = 1;
+bool openDoor = false;
 
 void createBullet(int x, int y, int discription);
 void Gunner(int x, int y, int speed, int discription);
 void drawMap();
 void setBrick(int x, int y);
 void drawHero();
+void key(int x, int y);
+void door(int x, int y);
 void brick1(int x, int y);
 void brick2(int x, int y);
 void brick3(int x, int y);
@@ -122,7 +126,8 @@ public:
 };
 
 std::vector<bullet> all_bullet;
-std::vector<bullet> gunners_bullets; 
+std::vector<bullet> gunners_bullets;
+std::map<int,int> doors;
 
 void setspace(int x, int y) // свободное пространство
 {
@@ -505,7 +510,7 @@ void drawHero() //отрисовка персонажа
     }
     HP(curHealth);
     //тело
-    glColor3f(0.96f, 0.86f, 0.69f);
+    glColor3f(0.4f, 0.2f, 0.1f);
     glBegin(GL_POLYGON);
         glVertex2f(posX, posY+0.3);
         glVertex2f(posX, posY+0.7);
@@ -516,15 +521,16 @@ void drawHero() //отрисовка персонажа
         glVertex2f(posX+0.75, posY);
         glVertex2f(posX+0.3, posY);
     glEnd();
+
     //глаза
     glColor3f(1, 1, 1);
     glRectd(posX+0.2,posY+0.3,posX+0.4,posY+0.7);
     glRectd(posX+0.6,posY+0.3,posX+0.8,posY+0.7);
+
     //глазницы
-    //glColor3f(0.0, 0.5, 1.0);
-    glColor3f(0.0, 0.0, 0.0);
-    glRectd(posX+0.3,posY+0.4,posX+0.4,posY+0.6);
-    glRectd(posX+0.6,posY+0.4,posX+0.7,posY+0.6);
+    glColor3f(0.0, 0.3, 0.6);
+    glRectd(posX+0.25,posY+0.4,posX+0.4,posY+0.6);
+    glRectd(posX+0.6,posY+0.4,posX+0.75,posY+0.6);
 
     if (posY == ROWS-1) // следующий уровень
     {
@@ -533,7 +539,16 @@ void drawHero() //отрисовка персонажа
         posY=1;
         all_bullet.clear();
         gunners_bullets.clear();
+        openDoor = false;
     }
+    if (posY == 0)
+    {
+        level--;
+        posX=14;
+        posY=38;
+        openDoor = true;
+    }
+    if (matr[ROWS-1-posY][posX] >= 80 && matr[ROWS-1-posY][posX] <= 89) doors[matr[ROWS-1-posY][posX]-80] = 2;
 }
 
 void setBrick(int x, int y) //рандомизация расстановки камней
@@ -542,6 +557,47 @@ void setBrick(int x, int y) //рандомизация расстановки к
     else if ((x+y)%3==1) brick2(x,y);
     else brick1(x,y);
     matr[ROWS-1-y][x] = 1;
+}
+
+void door(int x, int y, int whichDoor)
+{
+    if (doors[whichDoor] == 0) doors[whichDoor]++;
+    if (doors[whichDoor] == 2)
+    {
+        matr[ROWS-1-y][x] = 0;
+        setspace(x,y);
+    }
+    else
+    {
+        matr[ROWS-1-y][x] = 1;
+        // цвет всей двери
+        glColor3f(0.48, 0.32, 0.16);
+        glRectd(x,y,x+1,y+1);
+
+        // перекладины
+        glColor3f(0.36, 0.25, 0.2);
+        glRectd(x+0.2,y,x+0.3,y+1);
+        glRectd(x+0.45,y,x+0.55,y+1);
+        glRectd(x+0.7,y,x+0.8,y+1);
+        glRectd(x,y+0.7,x+1,y+0.8);
+        glRectd(x,y+0.2,x+1,y+0.3);
+        glRectd(x,y+0.45,x+1,y+0.55);
+    }
+}
+
+void key(int x, int y, int whichKey)
+{
+    setspace(x,y);
+    if (doors[whichKey] != 2)
+    {
+        matr[ROWS-1-y][x] = whichKey+80;
+        glColor3f(0.9, 0.7, 0.18);
+        glRectd(x,y+0.2,x+0.4,y+0.8);
+        glRectd(x+0.1,y+0.3,x+0.3,y+0.7);
+        glRectd(x+0.4,y+0.4,x+1,y+0.55);
+        glRectd(x+0.6,y+0.2,x+0.7,y+0.4);
+        glRectd(x+0.8,y+0.2,x+0.9,y+0.4);
+    }
 }
 
 void drawMap() // отрисовка карты
@@ -567,13 +623,15 @@ void drawMap() // отрисовка карты
         for (int j=0;j<COLUMNS;j++)
         {
             file>>num;
-            if (num == 0 || num == 9) setspace(j,COLUMNS+9-i);
-            else if (num == 1) setBrick(j,COLUMNS+9-i);
-            else if (num == 2) lava(j,COLUMNS+9-i);
-            else if (num<=399 && num>=301) Gunner(j,COLUMNS+9-i, num-300, UP);
-            else if (num<=499 && num>=401) Gunner(j,COLUMNS+9-i, num-400, DOWN);
-            else if (num<=599 && num>=501) Gunner(j,COLUMNS+9-i, num-500, LEFT);
-            else if (num<=699 && num>=601) Gunner(j,COLUMNS+9-i, num-600, RIGHT);
+            if (num == 0) setspace(j,COLUMNS+10-i);
+            else if (num == 1) setBrick(j,COLUMNS+10-i);
+            else if (num == 2) lava(j,COLUMNS+10-i);
+            else if (num<=399 && num>=301) Gunner(j,COLUMNS+10-i, num-300, UP);
+            else if (num<=499 && num>=401) Gunner(j,COLUMNS+10-i, num-400, DOWN);
+            else if (num<=599 && num>=501) Gunner(j,COLUMNS+10-i, num-500, LEFT);
+            else if (num<=699 && num>=601) Gunner(j,COLUMNS+10-i, num-600, RIGHT);
+            else if (num<=99 && num>=90) door(j, COLUMNS+10-i, num-90);
+            else if (num<=89 && num>=80) key(j, COLUMNS+10-i, num-80);
         }
     }
     file.close();
@@ -755,7 +813,7 @@ void timer(float &timeValue)
         gameOver();
     }
     glColor3f(1.0, 0.7, 0.3);
-    glRectd(23,1,29-(6-6*timeValue/(TIME1*1.0)),2);
+    glRectd(22,1,28-(6-6*timeValue/(TIME1*1.0)),2);
 }
 
 void gameOver()
