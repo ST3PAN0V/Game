@@ -12,8 +12,9 @@ bool isOutside = true;
 bool lavaShimmer = true;
 int forShimmer = 0;
 int curHealth = HEALTH;
-float curTime=TIME1;
+float curTime=TIME;
 int level = 1;
+bool openDoor = false;
 
 void createBullet(int x, int y, int discription);
 void Gunner(int x, int y, int speed, int discription);
@@ -122,19 +123,6 @@ public:
     int getY()
     {
         return this->Y;
-    }
-};
-
-class rocket
-{
-private:
-    int x;
-    int y;
-    int time;
-public:
-    void boom()
-    {
-        if (time == 0)
     }
 };
 
@@ -553,18 +541,20 @@ void drawHero() //отрисовка персонажа
         posY=1;
         all_bullet.clear();
         gunners_bullets.clear();
+        openDoor = false;
     }
     if (posY == 0)
     {
         level--;
         posX=14;
         posY=38;
+        openDoor = true;
     }
     if (matr[ROWS-1-posY][posX] >= 80 && matr[ROWS-1-posY][posX] <= 89) doors[matr[ROWS-1-posY][posX]-80] = 2;
     if (matr[ROWS-1-posY][posX] >= 31 && matr[ROWS-1-posY][posX] <= 39)
     {
         healths[matr[ROWS-1-posY][posX]-30]++;
-        if (curHealth != HEALTH) curHealth++;
+        curHealth++;
     }
 }
 
@@ -844,19 +834,20 @@ void timer(float &timeValue)
         gameOver();
     }
     glColor3f(1.0, 0.7, 0.3);
-    glRectd(22,1,28-(6-6*timeValue/(TIME1*1.0)),2);
+    glRectd(22,1,28-(6-6*timeValue/(TIME*1.0)),2);
 }
 
 void gameOver()
 {
-    posX = 14;
-    posY = 1;
+    level = 1;
+    posX=14;
+    posY=1;
     all_bullet.clear();
     gunners_bullets.clear();
     doors.clear();
     healths.clear();
     curHealth = HEALTH;
-    curTime = TIME1;
+    curTime = TIME;
 }
 //--------------------------------------------------------------------------------
 
