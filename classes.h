@@ -8,6 +8,6 @@
 #define COLUMNS 29
 #define ROWS 40
 #define HEALTH 3
-#define TIME1 120*10
+#define TIME1 140*10
 
 void playGame();
