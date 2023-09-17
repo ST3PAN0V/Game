@@ -13,7 +13,7 @@ bool lavaShimmer = true;
 int forShimmer = 0;
 int curHealth = HEALTH;
 float curTime=TIME1;
-int level = 1;
+int level = 2;
 bool openDoor = false;
 
 void createBullet(int x, int y, int discription);
@@ -21,8 +21,8 @@ void Gunner(int x, int y, int speed, int discription);
 void drawMap();
 void setBrick(int x, int y);
 void drawHero();
-void key(int x, int y);
-void door(int x, int y);
+void key(int x, int y, int whichKey);
+void door(int x, int y, int whichDoor);
 void brick1(int x, int y);
 void brick2(int x, int y);
 void brick3(int x, int y);
@@ -34,6 +34,7 @@ void moveEntity();
 void lava(int x, int y);
 void HP(int Hp);
 void timer(float &);
+void healthing(int x, int y, int whichHealth);
 void gameOver();
 
 class bullet
@@ -128,6 +129,7 @@ public:
 std::vector<bullet> all_bullet;
 std::vector<bullet> gunners_bullets;
 std::map<int,int> doors;
+std::map<int,int> healths;
 
 void setspace(int x, int y) // свободное пространство
 {
@@ -549,6 +551,11 @@ void drawHero() //отрисовка персонажа
         openDoor = true;
     }
     if (matr[ROWS-1-posY][posX] >= 80 && matr[ROWS-1-posY][posX] <= 89) doors[matr[ROWS-1-posY][posX]-80] = 2;
+    if (matr[ROWS-1-posY][posX] >= 31 && matr[ROWS-1-posY][posX] <= 39)
+    {
+        healths[matr[ROWS-1-posY][posX]-30]++;
+        curHealth++;
+    }
 }
 
 void setBrick(int x, int y) //рандомизация расстановки камней
@@ -591,12 +598,25 @@ void key(int x, int y, int whichKey)
     if (doors[whichKey] != 2)
     {
         matr[ROWS-1-y][x] = whichKey+80;
-        glColor3f(0.9, 0.7, 0.18);
+        glColor3f(0.8, 0.6, 0.2);
         glRectd(x,y+0.2,x+0.4,y+0.8);
         glRectd(x+0.1,y+0.3,x+0.3,y+0.7);
         glRectd(x+0.4,y+0.4,x+1,y+0.55);
         glRectd(x+0.6,y+0.2,x+0.7,y+0.4);
         glRectd(x+0.8,y+0.2,x+0.9,y+0.4);
+    }
+}
+
+void healthing(int x, int y,int whichHealth)
+{
+    setspace(x,y);
+    if (healths[whichHealth] == 0) healths[whichHealth]++;
+    if (healths[whichHealth] == 1)
+    {
+        matr[ROWS-1-y][x] = 30+whichHealth; 
+        glColor3f(1, 0, 0);
+        glRectd(x,y+0.3,x+1,y+0.7);
+        glRectd(x+0.3,y,x+0.7,y+1);
     }
 }
 
@@ -632,6 +652,7 @@ void drawMap() // отрисовка карты
             else if (num<=699 && num>=601) Gunner(j,COLUMNS+10-i, num-600, RIGHT);
             else if (num<=99 && num>=90) door(j, COLUMNS+10-i, num-90);
             else if (num<=89 && num>=80) key(j, COLUMNS+10-i, num-80);
+            else if (num<=39 && num>=31) healthing(j, COLUMNS+10-i, num-30);
         }
     }
     file.close();

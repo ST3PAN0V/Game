@@ -7,7 +7,7 @@
 #define STAY 3
 #define COLUMNS 29
 #define ROWS 40
-#define HEALTH 3
+#define HEALTH 300
 #define TIME1 120*10
 
 void playGame();
