@@ -1,4 +1,5 @@
 #include "classes.h"
+#include <cctype>
 
 #define FPS 10
 
@@ -27,20 +28,20 @@ void timer_callback(int)
     glutTimerFunc(1000/FPS, timer_callback, 0);
 }
 
-void keyboard_callback(int key, int, int)
+void keyboard_callback(unsigned char key, int, int)
 {
     switch (key)
     {
-    case GLUT_KEY_UP:
+    case 'w':
         sDirection=UP;
         break;
-    case GLUT_KEY_DOWN:
+    case 's':
         sDirection=DOWN;
         break;
-    case GLUT_KEY_RIGHT:
+    case 'd':
         sDirection=RIGHT;
         break;
-    case GLUT_KEY_LEFT:
+    case 'a':
         sDirection=LEFT;
         break;
     default:
@@ -56,7 +57,7 @@ int main(int argc, char *argv[]) {
     glutDisplayFunc(display_callback);
     glutReshapeFunc(reshape_callback);
     glutTimerFunc(0, timer_callback, 0);
-    glutSpecialFunc(keyboard_callback);
+    glutKeyboardFunc(keyboard_callback);
     glutMainLoop();
     return 0;
 }
