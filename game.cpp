@@ -13,7 +13,7 @@ bool lavaShimmer = true;
 int forShimmer = 0;
 int curHealth = HEALTH;
 float curTime=TIME1;
-int level = 2;
+int level = 1;
 bool openDoor = false;
 
 void createBullet(int x, int y, int discription);
