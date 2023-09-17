@@ -31,10 +31,12 @@ void space2(int x, int y);
 void space1(int x, int y);
 void setspace(int x, int y);
 void moveEntity();
+void traper(int x, int y);
 void lava(int x, int y);
 void HP(int Hp);
 void timer(float &);
 void healthing(int x, int y, int whichHealth);
+void clearMap();
 void gameOver();
 
 class bullet
@@ -126,10 +128,74 @@ public:
     }
 };
 
+class trap
+{
+private:
+    int x;
+    int y;
+    int curtime = 0;
+    int waiting = 0;
+    void bite()
+    {
+        setspace(x,y);
+        matr[ROWS-1-y][x] = 2;
+        glColor3f(0.3, 0.3, 0.3);
+        glRectd(x+0.2,y+0.2,x+0.4,y+0.4);
+        glRectd(x+0.6,y+0.2,x+0.8,y+0.4);
+        glRectd(x+0.2,y+0.6,x+0.4,y+0.8);
+        glRectd(x+0.6,y+0.6,x+0.8,y+0.8);
+    }
+public:
+    trap()
+    {
+        this->x = -1;
+        this->y = -1;
+    }
+    trap(int x, int y)
+    {
+        this->x = x;
+        this->y = y;
+    }
+    int getX()
+    {
+        return x;
+    }
+    int getY()
+    {
+        return y;
+    }
+    void wait()
+    {
+        if (curtime == ((x*2+y*3)%5)+15)
+        {
+            if (waiting != 1)
+            {
+                bite();
+                waiting++;
+            }
+            else
+            {
+                setspace(x, y);
+                matr[ROWS-1-y][x] = 0;
+                waiting = 0;
+                curtime = 0;
+            }
+
+        }
+        else 
+        {
+            setspace(x, y);
+            matr[ROWS-1-y][x] = 0;
+            curtime++;
+        }
+    }
+};
+
 std::vector<bullet> all_bullet;
 std::vector<bullet> gunners_bullets;
 std::map<int,int> doors;
 std::map<int,int> healths;
+std::vector<trap> traps;
 
 void setspace(int x, int y) // свободное пространство
 {
@@ -206,6 +272,20 @@ void lava(int x, int y) // лава
             glRectd(x+0.6,y,x+1,y+0.2);
         }
     }
+}
+
+void clearMap() // чистка карты
+{
+    for (int i=0; i<ROWS; i++)
+    {
+        for (int j=0; j<COLUMNS; j++)
+        {
+            matr[i][j] = 0;
+        }
+    }
+    all_bullet.clear();
+    gunners_bullets.clear();
+    traps.clear();
 }
 
 void brick3(int x, int y) //текстурка камня 1
@@ -539,16 +619,14 @@ void drawHero() //отрисовка персонажа
         level++;
         posX=14;
         posY=1;
-        all_bullet.clear();
-        gunners_bullets.clear();
-        openDoor = false;
+        clearMap();
     }
     if (posY == 0)
     {
         level--;
         posX=14;
         posY=38;
-        openDoor = true;
+        clearMap();
     }
     if (matr[ROWS-1-posY][posX] >= 80 && matr[ROWS-1-posY][posX] <= 89) doors[matr[ROWS-1-posY][posX]-80] = 2;
     if (matr[ROWS-1-posY][posX] >= 31 && matr[ROWS-1-posY][posX] <= 39)
@@ -607,6 +685,16 @@ void key(int x, int y, int whichKey)
     }
 }
 
+void traper(int x, int y)
+{
+    isOutside = true;
+    for (int i=0; i<traps.size(); i++)
+    {
+        if (traps[i].getX() == x && traps[i].getY() == y) isOutside = false;
+    }
+    if (isOutside) traps.emplace_back(x, y);
+}
+
 void healthing(int x, int y,int whichHealth)
 {
     setspace(x,y);
@@ -653,6 +741,7 @@ void drawMap() // отрисовка карты
             else if (num<=99 && num>=90) door(j, COLUMNS+10-i, num-90);
             else if (num<=89 && num>=80) key(j, COLUMNS+10-i, num-80);
             else if (num<=39 && num>=31) healthing(j, COLUMNS+10-i, num-30);
+            else if (num == 3) traper(j, COLUMNS+10-i);
         }
     }
     file.close();
@@ -794,6 +883,10 @@ void createBullet(int x, int y, int direction) // создание пули
 
 void moveEntity() // каждый объект делает действие за отрисовку 1 кадра
 {
+    for (int i=0; i<traps.size(); i++)
+    {
+        traps[i].wait();
+    }
     int i = 0;
     while (i < all_bullet.size())
     {
@@ -804,6 +897,7 @@ void moveEntity() // каждый объект делает действие з�
     {
         gunners_bullets[j].wait();
     }
+
     if (forShimmer == 10) // часота сияния;
     {
         forShimmer = 0;
