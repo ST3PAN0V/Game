@@ -1,9 +1,9 @@
-#include "classes.h"
 #include <vector>
 #include <fstream>
 #include <algorithm>
 #include <string>
 #include <map>
+#include "classes.h"
 
 short sDirection = STAY;
 int matr[ROWS][COLUMNS];
@@ -12,7 +12,7 @@ bool isOutside = true;
 bool lavaShimmer = true;
 int forShimmer = 0;
 int curHealth = HEALTH;
-float curTime=TIME;
+float curTime = TIME;
 int level = 1;
 bool openDoor = false;
 
@@ -38,6 +38,7 @@ void timer(float &);
 void healthing(int x, int y, int whichHealth);
 void clearMap();
 void gameOver();
+void timeBonus(int x, int y, int whichTime);
 
 class bullet
 {
@@ -195,6 +196,7 @@ std::vector<bullet> all_bullet;
 std::vector<bullet> gunners_bullets;
 std::map<int,int> doors;
 std::map<int,int> healths;
+std::map<int,int> times;
 std::vector<trap> traps;
 
 void setspace(int x, int y) // свободное пространство
@@ -611,9 +613,12 @@ void drawHero() //отрисовка персонажа
 
     //глазницы
     glColor3f(0.0, 0.3, 0.6);
-    glRectd(posX+0.25,posY+0.4,posX+0.4,posY+0.6);
-    glRectd(posX+0.6,posY+0.4,posX+0.75,posY+0.6);
-
+    glRectd(posX+0.2,posY+0.45,posX+0.35,posY+0.65);
+    glRectd(posX+0.65,posY+0.4,posX+0.8,posY+0.6);
+    if (level == 3 && posY == ROWS-1)
+    {
+        exit(0);
+    }
     if (posY == ROWS-1) // следующий уровень
     {
         level++;
@@ -621,18 +626,25 @@ void drawHero() //отрисовка персонажа
         posY=1;
         clearMap();
     }
-    if (posY == 0)
+    if (posY == 0) // предыдущий уровень
     {
         level--;
         posX=14;
         posY=38;
         clearMap();
     }
+    
     if (matr[ROWS-1-posY][posX] >= 80 && matr[ROWS-1-posY][posX] <= 89) doors[matr[ROWS-1-posY][posX]-80] = 2;
     if (matr[ROWS-1-posY][posX] >= 31 && matr[ROWS-1-posY][posX] <= 39)
     {
         healths[matr[ROWS-1-posY][posX]-30]++;
         curHealth++;
+    }
+    if (matr[ROWS-1-posY][posX] >= 41 && matr[ROWS-1-posY][posX] <= 49)
+    {
+        times[matr[ROWS-1-posY][posX]-40]++;
+        if (curTime+200 > TIME) curTime = TIME;
+        else curTime += 200;
     }
 }
 
@@ -695,7 +707,27 @@ void traper(int x, int y)
     if (isOutside) traps.emplace_back(x, y);
 }
 
-void healthing(int x, int y,int whichHealth)
+void timeBonus(int x, int y, int whichTime)
+{
+    setspace(x,y);
+    if (times[whichTime] == 0) times[whichTime]++;
+    if (times[whichTime] == 1)
+    {
+        matr[ROWS-1-y][x] = 40+whichTime;
+        glPushMatrix();
+            glColor3f(1.0, 0.8, 0.0);
+            glTranslatef(x+0.5, y+0.5, 0);
+            glutSolidSphere(0.4, 10, 10);
+            glColor3f(0.0, 0.0, 0.0);
+            glutSolidSphere(0.12, 10, 10);
+        glPopMatrix();
+        glColor3f(0.0, 0.0, 0.0);
+        glRectd(x+0.46,y+0.5,x+0.53,y+0.85);
+        glRectd(x+0.46,y+0.46,x+0.78,y+0.53);
+    }
+}
+
+void healthing(int x, int y, int whichHealth)
 {
     setspace(x,y);
     if (healths[whichHealth] == 0) healths[whichHealth]++;
@@ -742,6 +774,7 @@ void drawMap() // отрисовка карты
             else if (num<=89 && num>=80) key(j, COLUMNS+10-i, num-80);
             else if (num<=39 && num>=31) healthing(j, COLUMNS+10-i, num-30);
             else if (num == 3) traper(j, COLUMNS+10-i);
+            else if (num<=49 && num>=41) timeBonus(j, COLUMNS+10-i, num-40);
         }
     }
     file.close();
