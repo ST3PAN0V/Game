@@ -1,38 +1,66 @@
-# My game
-Приветсвтую!
-В этом репозитории лежит код моей игры.
-На данный момент игра запускается только на ОС Linux.
+# Game
 
-## Как запустить игру?
-Чтобы запустить игру скачайте файл MyGame (это бинарный файл и как раз по этой причине он не запускается на Windows),
-затем скачайте карты FirstMap.txt и SecondMap.txt, после этого перейдите в терминал,
-перейдите в папку со скачанными файлами (при помощи cd), пропишите команду chmod +x MyGame для того чтобы сделать файл исполняемым.
-Наконец запустите игру! (при помощи команды ./MyGame)
-Периодически я буду вносить изменения, т.к игра еще не закончена.
+My first C++ game: a Linux project built with OpenGL and GLUT. It includes keyboard-controlled movement, a grid-based world, and levels loaded from text files.
 
-## Краткое описание файлов игры
-* main.cpp:
-Отрисовывает окно, задает с какой скоростью будет идти игра (параметр FPS), отслеживает нажимаемые кнопки на клавиатуре.
+**Status: unfinished.** This repository preserves the current implementation as a personal game-development project.
 
-* game.cpp:
-Основной файл, в котором прописана вся логика игры, отрисовывает все объекты, содержит все классы и функции, считывает карты.
+## Features
 
-* FirstMap.txt, SecondMap.txt, ThirdMap.txt:
-Текстовые файлы, которые содержат матрицу, описывающую местонахождение начальных объектов,
-которые считываются функцией из файла game.cpp.
-Эти файлы нужны чтобы можно было в любой момент переделать/подправить карту не залезая в основной код.
+- Window rendering and keyboard input through GLUT.
+- Game logic and object rendering in C++.
+- Three text-based map files that can be edited independently of the source code.
+- A Makefile that builds the `MyGame` executable.
 
-* classes.h:
-Заголовочный файл содержащий макросы и общие функции.
+## Build and run
 
-* Makefile:
-Файл, в котором описаны правила сборки проекта.
-Выдает конечный файл MyGame формата .bin.
+Requirements:
 
-* MyGame:
-Бинарный файл самой игры, которые появляется в результате выполнения инструкций в Makefile.
+- Linux with a graphical desktop session.
+- `g++` and Make.
+- OpenGL development libraries.
+- FreeGLUT development headers and library, including `GL/freeglut.h`.
 
-## Контакты
-По всем вопросам пишите в Telegram
-`@ArtemS101`
-Буду рад пообщаться!
+Clone the repository, build it, and run the executable from the repository root:
+
+```bash
+git clone https://github.com/ST3PAN0V/Game.git
+cd Game
+make
+./MyGame
+```
+
+Keep `FirstMap.txt`, `SecondMap.txt`, and `ThirdMap.txt` in the working directory. The game opens them by relative filename.
+
+The repository also contains a Linux binary named `MyGame`. To try that existing binary from the repository root:
+
+```bash
+chmod +x MyGame
+./MyGame
+```
+
+Building from source lets you use your own system's compiler and OpenGL/GLUT libraries.
+
+## Controls
+
+| Key | Movement |
+| --- | --- |
+| `w` | Up |
+| `a` | Left |
+| `s` | Down |
+| `d` | Right |
+
+## Project layout
+
+| File | Purpose |
+| --- | --- |
+| [`main.cpp`](main.cpp) | Window setup, rendering callbacks, frame timer, and keyboard input |
+| [`game.cpp`](game.cpp) | Game logic, object rendering, and map loading |
+| [`classes.h`](classes.h) | Shared constants, declarations, and the FreeGLUT include |
+| [`FirstMap.txt`](FirstMap.txt), [`SecondMap.txt`](SecondMap.txt), [`ThirdMap.txt`](ThirdMap.txt) | Initial map layouts |
+| [`Makefile`](Makefile) | Compilation and linking against GLUT and OpenGL |
+| `MyGame` | Game executable |
+
+## Contact
+
+Questions or feedback: [Telegram](https://t.me/ArtemS101).
+
