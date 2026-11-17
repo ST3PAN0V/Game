@@ -1,26 +1,27 @@
 # Game
 
-My first C++ game: a Linux project built with OpenGL and GLUT. It includes keyboard-controlled movement, a grid-based world, and levels loaded from text files.
+Моя первая игра на C++: проект для Linux с OpenGL и GLUT. В ней реализованы управление с клавиатуры, мир на основе сетки и загрузка уровней из текстовых файлов.
 
-**Status: unfinished.** This repository preserves the current implementation as a personal game-development project.
+**Статус:** незавершённый учебный проект.  
+**Стек:** C++ · OpenGL · GLUT · Make · Linux
 
-## Features
+## Что реализовано
 
-- Window rendering and keyboard input through GLUT.
-- Game logic and object rendering in C++.
-- Three text-based map files that can be edited independently of the source code.
-- A Makefile that builds the `MyGame` executable.
+- Создание окна, отрисовка и обработка клавиатуры через GLUT.
+- Игровая логика и отрисовка объектов на C++.
+- Три текстовые карты, которые можно редактировать отдельно от исходного кода.
+- Сборка исполняемого файла `MyGame` через Makefile.
 
-## Build and run
+## Сборка и запуск
 
-Requirements:
+Понадобятся:
 
-- Linux with a graphical desktop session.
-- `g++` and Make.
-- OpenGL development libraries.
-- FreeGLUT development headers and library, including `GL/freeglut.h`.
+- Linux с графической сессией.
+- `g++` и Make.
+- Библиотеки OpenGL для разработки.
+- Библиотека FreeGLUT и заголовочные файлы, включая `GL/freeglut.h`.
 
-Clone the repository, build it, and run the executable from the repository root:
+Клонируйте репозиторий, соберите проект и запустите игру из его корня:
 
 ```bash
 git clone https://github.com/ST3PAN0V/Game.git
@@ -29,38 +30,37 @@ make
 ./MyGame
 ```
 
-Keep `FirstMap.txt`, `SecondMap.txt`, and `ThirdMap.txt` in the working directory. The game opens them by relative filename.
+Файлы `FirstMap.txt`, `SecondMap.txt` и `ThirdMap.txt` должны оставаться в рабочем каталоге: игра открывает их по относительным именам.
 
-The repository also contains a Linux binary named `MyGame`. To try that existing binary from the repository root:
+В репозитории также есть готовый Linux-файл `MyGame`. Его можно запустить из корня проекта:
 
 ```bash
 chmod +x MyGame
 ./MyGame
 ```
 
-Building from source lets you use your own system's compiler and OpenGL/GLUT libraries.
+Сборка из исходников позволяет использовать компилятор и библиотеки OpenGL/GLUT вашей системы.
 
-## Controls
+## Управление
 
-| Key | Movement |
+| Клавиша | Направление |
 | --- | --- |
-| `w` | Up |
-| `a` | Left |
-| `s` | Down |
-| `d` | Right |
+| `w` | Вверх |
+| `a` | Влево |
+| `s` | Вниз |
+| `d` | Вправо |
 
-## Project layout
+## Структура проекта
 
-| File | Purpose |
+| Файл | Назначение |
 | --- | --- |
-| [`main.cpp`](main.cpp) | Window setup, rendering callbacks, frame timer, and keyboard input |
-| [`game.cpp`](game.cpp) | Game logic, object rendering, and map loading |
-| [`classes.h`](classes.h) | Shared constants, declarations, and the FreeGLUT include |
-| [`FirstMap.txt`](FirstMap.txt), [`SecondMap.txt`](SecondMap.txt), [`ThirdMap.txt`](ThirdMap.txt) | Initial map layouts |
-| [`Makefile`](Makefile) | Compilation and linking against GLUT and OpenGL |
-| `MyGame` | Game executable |
+| [`main.cpp`](main.cpp) | Настройка окна, обработчики отрисовки, таймер кадров и ввод с клавиатуры |
+| [`game.cpp`](game.cpp) | Игровая логика, отрисовка объектов и загрузка карт |
+| [`classes.h`](classes.h) | Общие константы, объявления и подключение FreeGLUT |
+| [`FirstMap.txt`](FirstMap.txt), [`SecondMap.txt`](SecondMap.txt), [`ThirdMap.txt`](ThirdMap.txt) | Исходные карты уровней |
+| [`Makefile`](Makefile) | Компиляция и связывание с GLUT и OpenGL |
+| `MyGame` | Исполняемый файл игры |
 
-## Contact
+## Связь
 
-Questions or feedback: [Telegram](https://t.me/ArtemS101).
-
+Вопросы и обратная связь: [Telegram](https://t.me/ArtemS101).
